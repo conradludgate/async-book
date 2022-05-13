@@ -25,10 +25,14 @@ async fn index() {
 }
 ```
 
-This is a very simple but standard use of async. The key feature
-here is that each incomming server request happen 'asynchronously'.
+This is a very simple but standard use of async
+(featuring [axum](axum) and [reqwest](reqwest)).
+The key feature here is that each incomming server request happen 'asynchronously'.
 While each request handler is waiting on the response, it yields control
 of the thread over to another reuqest that needs to be handled.
+
+[axum]: https://docs.rs/axum/latest/axum/
+[reqwest]: https://docs.rs/reqwest/latest/reqwest/
 
 Let's break down what that means:
 
@@ -69,4 +73,7 @@ A request comes in, our server will spawn the request handler as a new async 'ta
 ```
 
 Paired with multiple threads to fully utilise the CPU cores, a good runtime can achieve
-hundreds of thousands requests per second, with many many thousands concurrent requests
+hundreds of thousands requests per second, with many many thousands concurrent requests.
+
+Over the course of this book, we will find out how these actually work, from a high level
+down to some very low level implementation details
