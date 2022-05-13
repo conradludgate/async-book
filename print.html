@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> Chapter 1</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="foreword.html"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="ch00-00-introduction.html"><strong aria-hidden="true">2.</strong> Introduction to Async</a></li><li class="chapter-item expanded "><a href="ch01-00-building-futures.html"><strong aria-hidden="true">3.</strong> Futures</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,8 +135,30 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
-
+                        <p>This guide intends to be both your entry point into writing async rust as well
+as your source for deep async discovery</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-async"><a class="header" href="#introduction-to-async">Introduction to Async</a></h1>
+<p>Async code exists to allow a programming language to offer more control
+in the way that code can run concurrently.
+A famous example of an async programming language is JS,
+which can only execute code using 1 thread, but still needs
+to support allowing multiple streams of work to happen at the same time.</p>
+<p>For instance, say you want to make a network request,
+but while you're communicating with the external service, you want
+to update the web page with a live updating progress bar.</p>
+<p>One way we can accomplish this in a single threaded setup is by allowing multiplexing.
+That is, allowing one task to temporarily pause to allow another task to resume.
+Eventually, both tasks will be run to completion, but neither will block the other.</p>
+<h2 id="threading-vs-async"><a class="header" href="#threading-vs-async">Threading vs Async</a></h2>
+<p>I've already hinted at another mechanism to allow concurrency, threads!
+Rust allows multithreading, so why do we need async code?
+Well, there's many reasons.
+Maybe you're writing code on an embedded device that only supports a single threaded operations.
+Maybe you're working in the Linux kernel itself and don't have access to just create threads as you please.
+Maybe you just want more control about what tasks can run and in which order,
+and to not be at the mercy of your OS scheduler.</p>
+<p>Whatever your reasoning, async rust should be general enough to support your needs.</p>
+<div style="break-before: page; page-break-before: always;"></div>
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
