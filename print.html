@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="foreword.html"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="ch00-00-introduction.html"><strong aria-hidden="true">2.</strong> Introduction to Async</a></li><li class="chapter-item expanded "><a href="ch01-00-building-futures.html"><strong aria-hidden="true">3.</strong> Futures</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="foreword.html"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="ch00-00-introduction.html"><strong aria-hidden="true">2.</strong> Introduction to Async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ch00-01-example.html"><strong aria-hidden="true">2.1.</strong> Example of Async</a></li></ol></li><li class="chapter-item expanded "><a href="ch01-00-building-futures.html"><strong aria-hidden="true">3.</strong> Futures</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -158,6 +158,77 @@ Maybe you're working in the Linux kernel itself and don't have access to just cr
 Maybe you just want more control about what tasks can run and in which order,
 and to not be at the mercy of your OS scheduler.</p>
 <p>Whatever your reasoning, async rust should be general enough to support your needs.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="example-of-async"><a class="header" href="#example-of-async">Example of Async</a></h1>
+<pre><pre class="playground"><code class="language-rust">#[tokio::main]
+async fn main() {
+    // build our application with a single route
+    let app = Router::new().route(&quot;/&quot;, get(index));
+
+    axum::Server::bind(&amp;&quot;0.0.0.0:3000&quot;.parse().unwrap())
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
+}
+
+async fn index() {
+    let client = reqwest::Client::new();
+    let res = client.post(&quot;http://example.com/counter&quot;)
+        .send()
+        .await;
+
+    match res {
+        Ok(_) =&gt; &quot;Welcome to my site!&quot;,
+        Err(_) =&gt; &quot;Error registering your visit&quot;,
+    }
+}
+</code></pre></pre>
+<p>This is a very simple but standard use of async
+(featuring <a href="axum">axum</a> and <a href="reqwest">reqwest</a>).
+The key feature here is that each incomming server request happen 'asynchronously'.
+While each request handler is waiting on the response, it yields control
+of the thread over to another reuqest that needs to be handled.</p>
+<p>Let's break down what that means:</p>
+<p>A request comes in, our server will spawn the request handler as a new async 'task'.</p>
+<pre><pre class="playground"><code class="language-rust">
+<span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// Task 1:
+    let client = reqwest::Client::new();
+    let res = client.post(&quot;http://example.com/counter&quot;)
+        .send()
+        .await;
+        // register interest in sending and receiving data.
+        // Our runtime will pause this task
+
+// Task 2:
+    let client = reqwest::Client::new();
+    let res = client.post(&quot;http://example.com/counter&quot;)
+        .send()
+        .await;
+        // register interest in sending and receiving data.
+        // Our runtime will pause this task
+
+// Task 1:
+    // our runtime has monitored the OS and found that the data is now ready,
+    // resumes task 1.
+    match res {
+        Ok(_) =&gt; &quot;Welcome to my site!&quot;,
+        Err(_) =&gt; &quot;Error registering your visit&quot;,
+    }
+
+// Task 2:
+    // our runtime has monitored the OS and found that the data is now ready,
+    // resumes task 2.
+    match res {
+        Ok(_) =&gt; &quot;Welcome to my site!&quot;,
+        Err(_) =&gt; &quot;Error registering your visit&quot;,
+    }
+<span class="boring">}
+</span></code></pre></pre>
+<p>Paired with multiple threads to fully utilise the CPU cores, a good runtime can achieve
+hundreds of thousands requests per second, with many many thousands concurrent requests.</p>
+<p>Over the course of this book, we will find out how these actually work, from a high level
+down to some very low level implementation details</p>
 <div style="break-before: page; page-break-before: always;"></div>
                     </main>
 
