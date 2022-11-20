@@ -25,3 +25,23 @@ Maybe you just want more control about what tasks can run and in which order,
 and to not be at the mercy of your OS scheduler.
 
 Whatever your reasoning, async rust should be general enough to support your needs.
+
+## Concurrency vs Parallelism
+
+Concurrency and Parallelism are different, but related concepts.
+
+Concurrency is the process of performing tasks out-of-order. For example, if you have two tasks,
+a simple setup is to perform task 1, then task 2. But if these tasks involve any waiting, then you're wasting time.
+Instead, concurrency is the idea that you can do some of task 1 and some of task 2 in any order. Eventually both
+will be complete and the same end goal is reached, but in potentially much less time.
+
+Parallelism is the process of performing tasks at the same time. This would involve multiple workers
+(CPU cores, services, threads, people etc) performing their single task. Using the example above, tasks 1 & 2 will be started immediately
+and will complete as soon as possible, however it might take double the resources in the worst case.
+
+Both concepts have the same goal of reducing the time a combination of tasks may take, but in different ways.
+Parallelism requires more resources, but concurrency can't achieve the same throughput levels. 
+
+Async Rust provides you with **concurrency**. However, most async runtimes make use of thread pools in order to utilise
+a fixed amount of parallelism. In theory, this lets you achieve as much throughput as possible with the least resources available
+in your system.
