@@ -45,3 +45,10 @@ Parallelism requires more resources, but concurrency can't achieve the same thro
 Async Rust provides you with **concurrency**. However, most async runtimes make use of thread pools in order to utilise
 a fixed amount of parallelism. In theory, this lets you achieve as much throughput as possible with the least resources available
 in your system.
+
+## Async Rust
+
+Under the hood, async-await in Rust is syntax sugar that makes it easy to build cooperative-coroutines, unlike the preemptive green threads
+you might see in Go or Java. This means that you must expliclty mark where a task may pause using `.await`. The runtime isn't able to
+pause a task because it's taking a long time. For that reason, you typically have to be careful to not do too much CPU bound work in between
+`.await` lines. 

@@ -77,8 +77,8 @@ traits like [Executor](https://docs.rs/hyper/0.14.23/hyper/rt/trait.Executor.htm
 and [Accept](https://docs.rs/hyper/0.14.23/hyper/server/accept/trait.Accept.html) to abstract away the `tokio::net::TcpListener`.
 
 Similarly, there exists [executor-trait](https://docs.rs/executor-trait/2.1.0/executor_trait/)
-and [reactor-trait](https://docs.rs/reactor-trait/1.1.0/reactor_trait/index.html) which are used by [`lapin`](https://crates.io/crates/lapin
-in order to allow the async-runtime to be configured in trait-objects. This requires more allocation overhead but potentially can
+and [reactor-trait](https://docs.rs/reactor-trait/1.1.0/reactor_trait/index.html) which are used by [`lapin`](https://crates.io/crates/lapin)
+in order to allow the async runtime to be configured in trait-objects. This requires more allocation overhead but potentially can
 speed up compile times if you don't need extreme performance.
 
 Because `tokio` is orders of magnitudes more popular than `smol` and `async-std`, there also exists compatibility layers like
