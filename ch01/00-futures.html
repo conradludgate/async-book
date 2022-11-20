@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>What is a runtime - The beginners guide of async Rust</title>
+        <title>Futures - The beginners guide of async Rust</title>
         <!-- Custom HTML head -->
 <script async defer data-website-id="e017be59-bc25-481d-a443-71f725a81b71" src="https://api.conradludgate.com/umami.js"></script>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../ch00/00-introduction.html"><strong aria-hidden="true">1.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../ch00/01-example.html"><strong aria-hidden="true">1.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="../ch00/02-runtime.html" class="active"><strong aria-hidden="true">1.2.</strong> What is a runtime</a></li><li class="chapter-item expanded "><a href="../ch00/03-using-a-runtime.html"><strong aria-hidden="true">1.3.</strong> Using a runtime</a></li></ol></li><li class="chapter-item expanded "><a href="../ch01/00-futures.html"><strong aria-hidden="true">2.</strong> Futures</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../ch00/00-introduction.html"><strong aria-hidden="true">1.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../ch00/01-example.html"><strong aria-hidden="true">1.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="../ch00/02-runtime.html"><strong aria-hidden="true">1.2.</strong> What is a runtime</a></li><li class="chapter-item expanded "><a href="../ch00/03-using-a-runtime.html"><strong aria-hidden="true">1.3.</strong> Using a runtime</a></li></ol></li><li class="chapter-item expanded "><a href="../ch01/00-futures.html" class="active"><strong aria-hidden="true">2.</strong> Futures</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,85 +135,14 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="what-is-a-runtime"><a class="header" href="#what-is-a-runtime">What is a runtime</a></h1>
-<p>At a high level, in order to run through your async functions, you need a runtime to manage which tasks are ready,
-as well as getting the tasks processed in an efficient way.</p>
-<p>The two most popular runtimes at the time of writing are <a href="https://tokio.rs/">tokio</a>, <a href="https://docs.rs/smol/1.2.5/smol/">smol</a>, and <a href="https://async.rs/">async-std</a>.
-All three achieve similar end results by utilising work-stealing and IO polling.</p>
-<h2 id="anatomy-of-a-runtime"><a class="header" href="#anatomy-of-a-runtime">Anatomy of a runtime</a></h2>
-<p>A runtime is collection of worker threads that share some state between them. At it's core, the runtime
-will has a shared queue of ready tasks, and possible a shared queue of waiting tasks. The job of the worker
-is to progress a task forward, poll the OS to see if any other tasks that were waiting for IO are ready, and countdown any waiting timers.</p>
-<p>For efficiency, most runtime workers will have their own local queue of tasks, and employ tactics like work distribution and work stealing in order
-to not starve any workers so they can maintain the maximum parallelism and throughput.</p>
-<p>Put into some psuedo-rust-code, this worker process might look like</p>
-<pre><code class="language-rust ignore">loop {
-    // check if anything new is ready
-    timers.count_down();
-    os.poll();
-
-    // get a task from the local queue
-    let mut task = local_queue.pop_front();
-
-    // if our local queue has no tasks, take some from the global queue
-    if task.is_none() {
-        local_queue.take_from(&amp;mut global_queue);
-        task = local_queue.pop_front();
-    }
-
-    // if there still isn't a task available, check the other workers
-    for worker in &amp;mut workers {
-        if task.is_some() { break }
-
-        local_queue.steal_from(worker);
-        task = local_queue.pop_front();
-    }
-
-    // if there was a task, run it.
-    // otherwise, pause this thread.
-    if let Some(task) = task {
-        task.progress();
-    } else {
-        pause();
-    }
-}
-</code></pre>
-<p>In reality, there's a bit more logic involved to maximise CPU efficiency, but that's the gist of it.</p>
-<h2 id="configuration"><a class="header" href="#configuration">Configuration</a></h2>
-<p>You might be working on platforms without access to the std library. This means you don't have access to the OS,
-or access to threads. In which case, you can simplify that event loop down significantly as you have no global queue
-or workers to steal from. You also don't need to worry about OS polling or pausing. </p>
-<p>Similarly, you might be using a 'thread-per-core' architecture, which removes the potentially expensive work-stealing step,
-but can reduce throughput in some workloads. This also allows you to run tasks that are <code>!Send</code> (can't be sent between threads).
-This is the technique employed by <a href="https://docs.rs/actix-rt/2.7.0/actix_rt/">actix-rt</a>
-by utilising <a href="https://docs.rs/tokio/1.22.0/tokio/task/struct.LocalSet.html">Tokio's <code>LocalSet</code></a>.
-<a href="https://www.datadoghq.com/blog/engineering/introducing-glommio/">Glommio</a> is another such runtime with this feature</p>
-<h2 id="choosing-a-runtime"><a class="header" href="#choosing-a-runtime">Choosing a runtime</a></h2>
-<p>Unfortunately, while there's a lot of options for runtimes, there's often not a lot of choice you as a user can make.</p>
-<p>If you want to use the <code>axum</code>/<code>reqwest</code> libraries as shown in <a href="./01-example.html">the previous example</a>, you <strong>must</strong> use <code>tokio</code>. This is because
-internally these use <code>tokio::spawn</code>, <code>tokio::net</code> and <code>tokio::time</code> modules. All of these must be called in the context of a tokio runtime
-and will panic if the thread local runtime global is not set.</p>
-<p>Some libraries are generic over runtimes. <code>hyper</code>, the HTTP engine that <code>axum</code> and <code>reqwest</code> are based on, is generic over executors using
-traits like <a href="https://docs.rs/hyper/0.14.23/hyper/rt/trait.Executor.html">Executor</a> to abstract away the <code>tokio::spawn</code>, 
-and <a href="https://docs.rs/hyper/0.14.23/hyper/server/accept/trait.Accept.html">Accept</a> to abstract away the <code>tokio::net::TcpListener</code>.</p>
-<p>Similarly, there exists <a href="https://docs.rs/executor-trait/2.1.0/executor_trait/">executor-trait</a>
-and <a href="https://docs.rs/reactor-trait/1.1.0/reactor_trait/index.html">reactor-trait</a> which are used by <a href="https://crates.io/crates/lapin"><code>lapin</code></a>
-in order to allow the async runtime to be configured in trait-objects. This requires more allocation overhead but potentially can
-speed up compile times if you don't need extreme performance.</p>
-<p>Because <code>tokio</code> is orders of magnitudes more popular than <code>smol</code> and <code>async-std</code>, there also exists compatibility layers like
-<a href="https://docs.rs/async-compat/latest/async_compat/">async-compat</a> which run tokio-based async code within a tokio context.
-This comes with the added cost that any tokio actions are spawned into an extra single threaded runtime, reducing overall resource
-efficiency.</p>
+                        <h1 id="futures"><a class="header" href="#futures">Futures</a></h1>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ch00/01-example.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ch00/03-using-a-runtime.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
-                            </a>
-                            <a rel="next" href="../ch00/03-using-a-runtime.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
                     </nav>
@@ -221,11 +150,8 @@ efficiency.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ch00/01-example.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ch00/03-using-a-runtime.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
-                    </a>
-                    <a rel="next" href="../ch00/03-using-a-runtime.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
 

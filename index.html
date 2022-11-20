@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Foreword - The beginners guide of async Rust</title>
+        <title>Introduction to async - The beginners guide of async Rust</title>
         <!-- Custom HTML head -->
 <script async defer data-website-id="e017be59-bc25-481d-a443-71f725a81b71" src="https://api.conradludgate.com/umami.js"></script>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="foreword.html" class="active"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="ch00/00-introduction.html"><strong aria-hidden="true">2.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ch00/01-example.html"><strong aria-hidden="true">2.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="ch00/02-runtime.html"><strong aria-hidden="true">2.2.</strong> What is a runtime</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="ch00/00-introduction.html" class="active"><strong aria-hidden="true">1.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ch00/01-example.html"><strong aria-hidden="true">1.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="ch00/02-runtime.html"><strong aria-hidden="true">1.2.</strong> What is a runtime</a></li><li class="chapter-item expanded "><a href="ch00/03-using-a-runtime.html"><strong aria-hidden="true">1.3.</strong> Using a runtime</a></li></ol></li><li class="chapter-item expanded "><a href="ch01/00-futures.html"><strong aria-hidden="true">2.</strong> Futures</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -135,14 +135,52 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p>If you're a web-developer looking to use Rust, or if you're already familiar with Rust but have to use async for some library,
-it can be quite overwhelming. This book hopes to be your entry point and beyond for all things async Rust</p>
+                        <h1 id="introduction-to-async"><a class="header" href="#introduction-to-async">Introduction to Async</a></h1>
+<p>Async code exists to allow a programming language to offer more control
+in the way that code can run concurrently.
+A famous example of an async programming language is JS,
+which can only execute code using 1 thread, but still needs
+to support allowing multiple streams of work to happen at the same time.</p>
+<p>For instance, say you want to make a network request,
+but while you're communicating with the external service, you want
+to update the web page with a live updating progress bar.</p>
+<p>One way we can accomplish this in a single threaded setup is by allowing multiplexing.
+That is, allowing one task to temporarily pause to allow another task to resume.
+Eventually, both tasks will be run to completion, but neither will block the other.</p>
+<h2 id="threading-vs-async"><a class="header" href="#threading-vs-async">Threading vs Async</a></h2>
+<p>I've already hinted at another mechanism to allow concurrency, threads!
+Rust allows multithreading, so why do we need async code?
+Well, there's many reasons.
+Maybe you're writing code on an embedded device that only supports a single threaded operations.
+Maybe you're working in the Linux kernel itself and don't have access to just create threads as you please.
+Maybe you just want more control about what tasks can run and in which order,
+and to not be at the mercy of your OS scheduler.</p>
+<p>Whatever your reasoning, async rust should be general enough to support your needs.</p>
+<h2 id="concurrency-vs-parallelism"><a class="header" href="#concurrency-vs-parallelism">Concurrency vs Parallelism</a></h2>
+<p>Concurrency and Parallelism are different, but related concepts.</p>
+<p>Concurrency is the process of performing tasks out-of-order. For example, if you have two tasks,
+a simple setup is to perform task 1, then task 2. But if these tasks involve any waiting, then you're wasting time.
+Instead, concurrency is the idea that you can do some of task 1 and some of task 2 in any order. Eventually both
+will be complete and the same end goal is reached, but in potentially much less time.</p>
+<p>Parallelism is the process of performing tasks at the same time. This would involve multiple workers
+(CPU cores, services, threads, people etc) performing their single task. Using the example above, tasks 1 &amp; 2 will be started immediately
+and will complete as soon as possible, however it might take double the resources in the worst case.</p>
+<p>Both concepts have the same goal of reducing the time a combination of tasks may take, but in different ways.
+Parallelism requires more resources, but concurrency can't achieve the same throughput levels. </p>
+<p>Async Rust provides you with <strong>concurrency</strong>. However, most async runtimes make use of thread pools in order to utilise
+a fixed amount of parallelism. In theory, this lets you achieve as much throughput as possible with the least resources available
+in your system.</p>
+<h2 id="async-rust"><a class="header" href="#async-rust">Async Rust</a></h2>
+<p>Under the hood, async-await in Rust is syntax sugar that makes it easy to build cooperative-coroutines, unlike the preemptive green threads
+you might see in Go or Java. This means that you must expliclty mark where a task may pause using <code>.await</code>. The runtime isn't able to
+pause a task because it's taking a long time. For that reason, you typically have to be careful to not do too much CPU bound work in between
+<code>.await</code> lines. </p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="next" href="ch00/00-introduction.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="ch00/01-example.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -151,7 +189,7 @@ it can be quite overwhelming. This book hopes to be your entry point and beyond 
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="next" href="ch00/00-introduction.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="ch00/01-example.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

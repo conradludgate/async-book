@@ -76,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../foreword.html"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="../ch00/00-introduction.html" class="active"><strong aria-hidden="true">2.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../ch00/01-example.html"><strong aria-hidden="true">2.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="../ch00/02-runtime.html"><strong aria-hidden="true">2.2.</strong> What is a runtime</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../ch00/00-introduction.html" class="active"><strong aria-hidden="true">1.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../ch00/01-example.html"><strong aria-hidden="true">1.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="../ch00/02-runtime.html"><strong aria-hidden="true">1.2.</strong> What is a runtime</a></li><li class="chapter-item expanded "><a href="../ch00/03-using-a-runtime.html"><strong aria-hidden="true">1.3.</strong> Using a runtime</a></li></ol></li><li class="chapter-item expanded "><a href="../ch01/00-futures.html"><strong aria-hidden="true">2.</strong> Futures</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -170,14 +170,16 @@ Parallelism requires more resources, but concurrency can't achieve the same thro
 <p>Async Rust provides you with <strong>concurrency</strong>. However, most async runtimes make use of thread pools in order to utilise
 a fixed amount of parallelism. In theory, this lets you achieve as much throughput as possible with the least resources available
 in your system.</p>
+<h2 id="async-rust"><a class="header" href="#async-rust">Async Rust</a></h2>
+<p>Under the hood, async-await in Rust is syntax sugar that makes it easy to build cooperative-coroutines, unlike the preemptive green threads
+you might see in Go or Java. This means that you must expliclty mark where a task may pause using <code>.await</code>. The runtime isn't able to
+pause a task because it's taking a long time. For that reason, you typically have to be careful to not do too much CPU bound work in between
+<code>.await</code> lines. </p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../foreword.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                                <i class="fa fa-angle-left"></i>
-                            </a>
                             <a rel="next" href="../ch00/01-example.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
@@ -187,9 +189,6 @@ in your system.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../foreword.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
                     <a rel="next" href="../ch00/01-example.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
