@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>The beginners guide of async Rust</title>
-        <meta name="robots" content="noindex" />
+        <title>What is a runtime - The beginners guide of async Rust</title>
         <!-- Custom HTML head -->
 <script async defer data-website-id="e017be59-bc25-481d-a443-71f725a81b71" src="https://api.conradludgate.com/umami.js"></script>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
@@ -12,26 +11,26 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
     </head>
     <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
@@ -77,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="foreword.html"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="ch00/00-introduction.html"><strong aria-hidden="true">2.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ch00/01-example.html"><strong aria-hidden="true">2.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="ch00/02-runtime.html"><strong aria-hidden="true">2.2.</strong> What is a runtime</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../foreword.html"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="../ch00/00-introduction.html"><strong aria-hidden="true">2.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../ch00/01-example.html"><strong aria-hidden="true">2.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="../ch00/02-runtime.html" class="active"><strong aria-hidden="true">2.2.</strong> What is a runtime</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -109,7 +108,7 @@
                     <h1 class="menu-title">The beginners guide of async Rust</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                     </div>
@@ -136,121 +135,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p>If you're a web-developer looking to use Rust, or if you're already familiar with Rust but have to use async for some library,
-it can be quite overwhelming. This book hopes to be your entry point and beyond for all things async Rust</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction-to-async"><a class="header" href="#introduction-to-async">Introduction to Async</a></h1>
-<p>Async code exists to allow a programming language to offer more control
-in the way that code can run concurrently.
-A famous example of an async programming language is JS,
-which can only execute code using 1 thread, but still needs
-to support allowing multiple streams of work to happen at the same time.</p>
-<p>For instance, say you want to make a network request,
-but while you're communicating with the external service, you want
-to update the web page with a live updating progress bar.</p>
-<p>One way we can accomplish this in a single threaded setup is by allowing multiplexing.
-That is, allowing one task to temporarily pause to allow another task to resume.
-Eventually, both tasks will be run to completion, but neither will block the other.</p>
-<h2 id="threading-vs-async"><a class="header" href="#threading-vs-async">Threading vs Async</a></h2>
-<p>I've already hinted at another mechanism to allow concurrency, threads!
-Rust allows multithreading, so why do we need async code?
-Well, there's many reasons.
-Maybe you're writing code on an embedded device that only supports a single threaded operations.
-Maybe you're working in the Linux kernel itself and don't have access to just create threads as you please.
-Maybe you just want more control about what tasks can run and in which order,
-and to not be at the mercy of your OS scheduler.</p>
-<p>Whatever your reasoning, async rust should be general enough to support your needs.</p>
-<h2 id="concurrency-vs-parallelism"><a class="header" href="#concurrency-vs-parallelism">Concurrency vs Parallelism</a></h2>
-<p>Concurrency and Parallelism are different, but related concepts.</p>
-<p>Concurrency is the process of performing tasks out-of-order. For example, if you have two tasks,
-a simple setup is to perform task 1, then task 2. But if these tasks involve any waiting, then you're wasting time.
-Instead, concurrency is the idea that you can do some of task 1 and some of task 2 in any order. Eventually both
-will be complete and the same end goal is reached, but in potentially much less time.</p>
-<p>Parallelism is the process of performing tasks at the same time. This would involve multiple workers
-(CPU cores, services, threads, people etc) performing their single task. Using the example above, tasks 1 &amp; 2 will be started immediately
-and will complete as soon as possible, however it might take double the resources in the worst case.</p>
-<p>Both concepts have the same goal of reducing the time a combination of tasks may take, but in different ways.
-Parallelism requires more resources, but concurrency can't achieve the same throughput levels. </p>
-<p>Async Rust provides you with <strong>concurrency</strong>. However, most async runtimes make use of thread pools in order to utilise
-a fixed amount of parallelism. In theory, this lets you achieve as much throughput as possible with the least resources available
-in your system.</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="example-of-async"><a class="header" href="#example-of-async">Example of Async</a></h1>
-<pre><pre class="playground"><code class="language-rust">use axum::{
-    routing::get,
-    Router,
-};
-
-#[tokio::main]
-async fn main() {
-    // build our application with a single route
-    let app = Router::new().route(&quot;/&quot;, get(index));
-
-    axum::Server::bind(&amp;&quot;0.0.0.0:3000&quot;.parse().unwrap())
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
-}
-
-async fn index() {
-    let client = reqwest::Client::new();
-    let res = client.post(&quot;http://example.com/counter&quot;)
-        .send()
-        .await;
-
-    match res {
-        Ok(_) =&gt; &quot;Welcome to my site!&quot;,
-        Err(_) =&gt; &quot;Error registering your visit&quot;,
-    }
-}
-</code></pre></pre>
-<p>This is a very typical async application,
-featuring <a href="https://docs.rs/axum/latest/axum/">axum</a> as the HTTP server library,
-<a href="https://docs.rs/reqwest/latest/reqwest/">reqwest</a> as the HTTP client library,
-and <a href="https://tokio.rs/">tokio</a> as the async runtime.</p>
-<p>The key feature here is that each incomming server request happen 'asynchronously'.
-While each request handler is waiting on the response, it yields control
-of the thread over to another request that needs to be handled.</p>
-<p>Let's break down what that means:</p>
-<p>As a request comes in, our server will launch the request handler as a new async 'task'.</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>// Task 1:
-    let client = reqwest::Client::new();
-    let res = client.post(&quot;http://example.com/counter&quot;)
-        .send()
-        .await;
-        // register interest in sending and receiving data.
-        // Our runtime will pause this task
-
-// Task 2:
-    let client = reqwest::Client::new();
-    let res = client.post(&quot;http://example.com/counter&quot;)
-        .send()
-        .await;
-        // register interest in sending and receiving data.
-        // Our runtime will pause this task
-
-// Task 1:
-    // our runtime has monitored the OS and found that the data is now ready,
-    // resumes task 1.
-    match res {
-        Ok(_) =&gt; &quot;Welcome to my site!&quot;,
-        Err(_) =&gt; &quot;Error registering your visit&quot;,
-    }
-
-// Task 2:
-    // our runtime has monitored the OS and found that the data is now ready,
-    // resumes task 2.
-    match res {
-        Ok(_) =&gt; &quot;Welcome to my site!&quot;,
-        Err(_) =&gt; &quot;Error registering your visit&quot;,
-    }
-<span class="boring">}
-</span></code></pre></pre>
-<p>Paired with multiple threads to fully utilise the CPU cores, a good runtime can achieve
-hundreds of thousands requests per second, with many many thousands concurrent requests.</p>
-<p>Over the course of this book, we will find out how these actually work, from a high level
-down to some very low level implementation details</p>
-<div style="break-before: page; page-break-before: always;"></div><h1 id="what-is-a-runtime"><a class="header" href="#what-is-a-runtime">What is a runtime</a></h1>
+                        <h1 id="what-is-a-runtime"><a class="header" href="#what-is-a-runtime">What is a runtime</a></h1>
 <p>At a high level, in order to run through your async functions, you need a runtime to manage which tasks are ready,
 as well as getting the tasks processed in an efficient way.</p>
 <p>The two most popular runtimes at the time of writing are <a href="https://tokio.rs/">tokio</a>, <a href="https://docs.rs/smol/1.2.5/smol/">smol</a>, and <a href="https://async.rs/">async-std</a>.
@@ -305,7 +190,7 @@ by utilising <a href="https://docs.rs/tokio/1.22.0/tokio/task/struct.LocalSet.ht
 <a href="https://www.datadoghq.com/blog/engineering/introducing-glommio/">Glommio</a> is another such runtime with this feature</p>
 <h2 id="choosing-a-runtime"><a class="header" href="#choosing-a-runtime">Choosing a runtime</a></h2>
 <p>Unfortunately, while there's a lot of options for runtimes, there's often not a lot of choice you as a user can make.</p>
-<p>If you want to use the <code>axum</code>/<code>reqwest</code> libraries as shown in <a href="ch00/./01-example.html">the previous example</a>, you <strong>must</strong> use <code>tokio</code>. This is because
+<p>If you want to use the <code>axum</code>/<code>reqwest</code> libraries as shown in <a href="./01-example.html">the previous example</a>, you <strong>must</strong> use <code>tokio</code>. This is because
 internally these use <code>tokio::spawn</code>, <code>tokio::net</code> and <code>tokio::time</code> modules. All of these must be called in the context of a tokio runtime
 and will panic if the thread local runtime global is not set.</p>
 <p>Some libraries are generic over runtimes. <code>hyper</code>, the HTTP engine that <code>axum</code> and <code>reqwest</code> are based on, is generic over executors using
@@ -324,12 +209,18 @@ efficiency.</p>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../ch00/01-example.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
                         <div style="clear: both"></div>
                     </nav>
                 </div>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../ch00/01-example.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
             </nav>
 
         </div>
@@ -337,18 +228,13 @@ efficiency.</p>
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
-        <script type="text/javascript">
-        window.addEventListener('load', function() {
-            window.setTimeout(window.print, 100);
-        });
-        </script>
     </body>
 </html>

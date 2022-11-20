@@ -3,33 +3,34 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Example of Async - The Rust Book of Async</title>
+        <title>Example of Async - The beginners guide of async Rust</title>
         <!-- Custom HTML head -->
+<script async defer data-website-id="e017be59-bc25-481d-a443-71f725a81b71" src="https://api.conradludgate.com/umami.js"></script>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
     </head>
     <body>
         <!-- Provide site root to javascript -->
         <script type="text/javascript">
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
@@ -75,7 +76,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="foreword.html"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="ch00-00-introduction.html"><strong aria-hidden="true">2.</strong> Introduction to Async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="ch00-01-example.html" class="active"><strong aria-hidden="true">2.1.</strong> Example of Async</a></li></ol></li><li class="chapter-item expanded "><a href="ch01-00-building-futures.html"><strong aria-hidden="true">3.</strong> Futures</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../foreword.html"><strong aria-hidden="true">1.</strong> Foreword</a></li><li class="chapter-item expanded "><a href="../ch00/00-introduction.html"><strong aria-hidden="true">2.</strong> Introduction to async</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../ch00/01-example.html" class="active"><strong aria-hidden="true">2.1.</strong> Example of Async</a></li><li class="chapter-item expanded "><a href="../ch00/02-runtime.html"><strong aria-hidden="true">2.2.</strong> What is a runtime</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -104,10 +105,10 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">The Rust Book of Async</h1>
+                    <h1 class="menu-title">The beginners guide of async Rust</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                     </div>
@@ -135,7 +136,12 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="example-of-async"><a class="header" href="#example-of-async">Example of Async</a></h1>
-<pre><pre class="playground"><code class="language-rust">#[tokio::main]
+<pre><pre class="playground"><code class="language-rust">use axum::{
+    routing::get,
+    Router,
+};
+
+#[tokio::main]
 async fn main() {
     // build our application with a single route
     let app = Router::new().route(&quot;/&quot;, get(index));
@@ -158,15 +164,16 @@ async fn index() {
     }
 }
 </code></pre></pre>
-<p>This is a very simple but standard use of async
-(featuring <a href="axum">axum</a> and <a href="reqwest">reqwest</a>).
-The key feature here is that each incomming server request happen 'asynchronously'.
+<p>This is a very typical async application,
+featuring <a href="https://docs.rs/axum/latest/axum/">axum</a> as the HTTP server library,
+<a href="https://docs.rs/reqwest/latest/reqwest/">reqwest</a> as the HTTP client library,
+and <a href="https://tokio.rs/">tokio</a> as the async runtime.</p>
+<p>The key feature here is that each incomming server request happen 'asynchronously'.
 While each request handler is waiting on the response, it yields control
-of the thread over to another reuqest that needs to be handled.</p>
+of the thread over to another request that needs to be handled.</p>
 <p>Let's break down what that means:</p>
-<p>A request comes in, our server will spawn the request handler as a new async 'task'.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<p>As a request comes in, our server will launch the request handler as a new async 'task'.</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// Task 1:
     let client = reqwest::Client::new();
@@ -210,10 +217,10 @@ down to some very low level implementation details</p>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="ch00-00-introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ch00/00-introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
-                            <a rel="next" href="ch01-00-building-futures.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../ch00/02-runtime.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
                         <div style="clear: both"></div>
@@ -222,10 +229,10 @@ down to some very low level implementation details</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="ch00-00-introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ch00/00-introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
-                    <a rel="next" href="ch01-00-building-futures.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../ch00/02-runtime.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
@@ -235,12 +242,12 @@ down to some very low level implementation details</p>
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
-        <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
-        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
     </body>
